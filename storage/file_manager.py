@@ -1,9 +1,12 @@
 from sqlalchemy import create_engine, String, Integer, Boolean, DateTime
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
 from datetime import datetime
+import os 
 
-#Connects to MySQL Database
-engine = create_engine('mysql+mysqlconnector://root:Sebby_football34@localhost/blog_system', echo=True)
+# Load password from environment variable
+db_password = os.getenv("DB_PASSWORD")
+
+engine = create_engine(f'mysql+mysqlconnector://root:{db_password}@localhost/blog_system', echo=True)
 
 #Creates a session factory and sessiom (EXPLANATION)
 Session = sessionmaker(bind=engine)

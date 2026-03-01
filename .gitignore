@@ -11,4 +11,4 @@ venv/
 .DS_Store
 
 # Random folders you don't want in Git
-vent/
+.env
