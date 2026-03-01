@@ -2,6 +2,9 @@ from sqlalchemy import create_engine, Column, String, Integer, Boolean, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
 import os 
+from dotenv import load_dotenv 
+
+load_dotenv()
 
 # Load password from environment variable
 db_password = os.getenv("DB_PASSWORD")
