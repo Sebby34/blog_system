@@ -1,2 +1,2 @@
-SQLAlchemy==2.0.0
-mysql-connector-python==8.1.1
+SQLAlchemy==1.4.48
+mysql-connector-python==8.1.0

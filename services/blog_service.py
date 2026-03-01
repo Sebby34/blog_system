@@ -31,19 +31,19 @@ class BlogService:
         if not self.current_user: 
             print("No user is logged in.")
             return False 
-        if self.current_user.role not in ["Admin", "Author"]:
-            print(f'{self.current_user.username} does not have permission to create posts.')
+        if self.current_user.role not in ["admin", "author"]:
+            print(f'{self.current_user.get_username()} does not have permission to create posts.')
             return False
         
         db_post = DBPost(
             title = title,
             content = content,
-            author = self.current_user.username,
+            author = self.current_user.get_username(),
             is_published = False
         )
         session.add(db_post)
         session.commit()
-        print(f'Post created by {self.current_user.username}')
+        print(f'Post created by {self.current_user.get_username()}')
         return True
     
     def publish_post(self, post_id):
@@ -70,8 +70,8 @@ class BlogService:
         if not db_post: 
             print(f'No post found with ID: {post_id}')
             return False
-        if self.current_user.role != "Admin" and db_post.author != self.current_user.username: 
-            print(f'{self.current_user.username} does not have permission to edit this post.')
+        if self.current_user.role != "admin" and db_post.author != self.current_user.get_username(): 
+            print(f'{self.current_user.get_username()} does not have permission to edit this post.')
             return False 
         
         db_post.title = new_title  
@@ -90,8 +90,8 @@ class BlogService:
         if not db_post: 
             print(f'No post found with ID: {post_id}')
             return False
-        if self.current_user.role != "Admin" and db_post.author != self.current_user.username: 
-            print(f'{self.current_user.username} does not have permission to delete this post.')
+        if self.current_user.role != "admin" and db_post.author != self.current_user.get_username(): 
+            print(f'{self.current_user.get_username()} does not have permission to delete this post.')
             return False 
         db_post.is_published = False
         session.commit()
@@ -123,17 +123,31 @@ class BlogService:
     def login_user(self, username, password): 
         stmt = select(DBUser).where(DBUser.username == username)
         db_user = session.execute (stmt).scalar_one_or_none()
-        if not db_user: 
+        if not db_user or db_user.password != password: 
             print("Invalid username or password")
             return False
         if db_user.is_banned: 
             print(f'User {username} is banned and cannot log in.')
             return False
-        if db_user and db_user.password == password:
-            self.current_user = db_user 
-            print(f'{username} logged in successfully!')
-            return True
-        print("Invalid username or password")
-        return False
+        role_lower = db_user.role.lower()
+        if role_lower == "admin": 
+            self.current_user = Admin(db_user.username, db_user.password)
+        elif role_lower == "author": 
+            self.current_user = Author(db_user.username, db_user.password)
+        else: 
+            self.current_user = Reader(db_user.username, db_user.password)
+        print(f'{username} logged in successfully!')
+        return True
     #^verifies username and password, if correct sets current user
+    
+    def get_all_posts(self): 
+        stmt = select(DBPost)
+        return session.execute(stmt).scalars().all()
+    #^Returns all posts regardless of published or not
+    
+    def get_published_posts(self): 
+        stmt = select(DBPost).where(DBPost.is_published == True)
+        return session.execute(stmt).scalars().all()
+    #^Returns only published posts
+    
                 
