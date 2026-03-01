@@ -1,1 +1,2 @@
-# No external packages required; standard library only
+SQLAlchemy==2.0.0
+mysql-connector-python==8.1.1
