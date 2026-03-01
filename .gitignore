@@ -1,0 +1,14 @@
+# Python cache files
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# macOS system files
+.DS_Store
+
+# Random folders you don't want in Git
+vent/
