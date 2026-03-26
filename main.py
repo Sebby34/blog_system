@@ -28,23 +28,25 @@ def display_menu(user):
         print("2. Search Posts")
         print("3. Logout")
 
+# Ensures valid menu choice is selected
 def get_menu_choice(prompt, valid_choices): 
     while True: 
         choice=input(prompt).strip()
         if choice in valid_choices: 
             return choice
         print(f'Invalid choice. Please select from {valid_choices}.')
-        #^Ensures the user selects a valid menu option, loops until done
 
 def handle_author_actions(blog_system):
     action= get_menu_choice("\nChoose an action: ", ["1", "2", "3", "4", "5", "6"])
     current_user = blog_system.current_user
 
+    # Create post
     if action =="1": 
         title= get_nonempty_input("Enter title: ")
         content= get_nonempty_input("Enter content: ")
         blog_system.create_post(title, content)
-    #^Creating post
+
+    # Edit post
     elif action== "2":
         try: 
             post_id=int(input("Enter post ID to edit: "))
@@ -53,61 +55,65 @@ def handle_author_actions(blog_system):
             blog_system.edit_post(post_id, new_title, new_content)
         except ValueError: 
             print("Invalid post ID. Please enter a valid integer.")
-            #^Error handling for invalid post ID
-    #^Editing post
+
+    # Publish post
     elif action == "3": 
         try: 
             post_id = int(input('Enter post ID to publish: '))
             blog_system.publish_post(post_id)
         except ValueError: 
             print("Invalid post ID. Please enter a valid integer.")
-            #^Error handling for invalid post ID
-    #^Publishing post
+
+    # Delete post
     elif action== "4":
         try: 
             post_id=int(input("Enter post ID to delete: "))
             blog_system.delete_post(post_id)
         except ValueError: 
             print("Invalid post ID. Please enter a valid integer.")
-            #^Error handling for invalid post ID
-    #^Deleting post
+
+    # View post
     elif action=="5": 
         all_posts = blog_system.get_all_posts()
         for post in all_posts: 
             if post.author == current_user.get_username(): 
                 print(f'{post.id} | {post.title} | Published: {post.is_published} | Date: {post.creation_date}')
-    #^Viewing posts
+
+    # Logout 
     elif action== "6": 
         print("Logging out. Goodbye!")
         blog_system.current_user= None
-    #^Logout
+
     else: 
         print("Invalid action!")
 
 def handle_admin_actions(blog_system): 
     action = get_menu_choice("\nChoose an action: ", ["1", "2", "3", "4", "5", "6"])
     current_user = blog_system.current_user
+
+    # View users
     if action== "1": 
         users = session.execute(select(DBUser)).scalars().all()
         for user in users:
             print(f'Username: {user.username}, Role: {user.role}, Banned: {user.is_banned}')
-    #^View all users
+
+    # Publish post 
     elif action == "2": 
         try: 
             post_id = int(input('Enter post ID to publish: '))
             blog_system.publish_post(post_id)
         except ValueError: 
             print("Invalid post ID. Please enter a valid integer.")
-            #^Error handling for invalid post ID
-    #^Publishing post
+
+    # Delete post 
     elif action== "3": 
         try: 
             post_id=int(input("Enter your post ID to delete: "))
             blog_system.delete_post(post_id)
         except ValueError: 
             print("Invalid post ID. Please enter a valid integer.")
-            #^Error handling for invalid post ID
-    #Delete any post
+
+    # Ban user
     elif action== "4": 
         username=get_nonempty_input("Enter username to ban: ")
         user = session.execute(select(DBUser).where(DBUser.username == username)).scalar_one_or_none()
@@ -117,7 +123,8 @@ def handle_admin_actions(blog_system):
             print(f'User: {username} has been banned.')
         else: 
             print("User not found.")
-    #^Ban user
+
+    # Unban user
     elif action == "5": 
         username=get_nonempty_input("Enter username to unban: ")
         user = session.execute(select(DBUser).where(DBUser.username == username)).scalar_one_or_none()
@@ -127,32 +134,36 @@ def handle_admin_actions(blog_system):
             print(f'User: {username} has been unbanned.')
         else: 
             print("User not found.")
-    #^Unban user
+
+    # Logout
     elif action== "6": 
         print("Logging out. Goodbye!")
         blog_system.current_user= None
-    #^Logout 
+ 
     else: 
         print("Invalid action!")
     
 def handle_reader_actions(blog_system): 
     action= get_menu_choice("\nChoose an action: ", ["1", "2", "3"])
     current_user = blog_system.current_user
+
+    # View published post 
     if action=="1": 
         posts = blog_system.get_published_posts()
         for post in posts:  
             print(f'{post.id} | {post.title} | Author: {post.author} | Date: {post.creation_date}')
-            #^View published posts
+
+    # Search posts
     elif action== "2": 
         keywords=get_nonempty_input("Enter keywords separated by spaces: ").split()
         posts = blog_system.search_posts(keywords)
         for post in posts: 
             print(f'{post.id} | {post.title} | Author: {post.author} | Date: {post.creation_date}')
-            #Searches multiple keywords in both title and content
+
+    # Logout 
     elif action== "3": 
         print("Logging out. Goodbye!")
         blog_system.current_user= None
-            #^Logout
     else: 
         print("Invalid action!")
 
@@ -162,7 +173,6 @@ def get_nonempty_input(prompt):
         if value: 
             return value
         print("Input cannot be empty. Please try again.")
-        #^Ensures the input is not empty, keeps asking until valid input is given 
 
 def main(): 
     blog_system=BlogService()
@@ -174,7 +184,6 @@ def main():
     blog_system.register_user(admin1)
     blog_system.register_user(author1)
     blog_system.register_user(reader1)
-    #^Register Users
 
     username=get_nonempty_input("Enter your username: ")
     password=get_nonempty_input("Enter your password: ")
@@ -186,13 +195,13 @@ def main():
             role = blog_system.current_user.role.lower()
             if role == "admin": 
                 handle_admin_actions(blog_system)
-                #^If user is admin call admin actions
+                
             elif role == "author": 
                 handle_author_actions(blog_system)
-                #^if user is author call author actions
+                
             elif role == "reader": 
                 handle_reader_actions(blog_system)
-                #^if user is reader call reader actions 
+                
     else: 
         print("Login failed! Please try again")
     

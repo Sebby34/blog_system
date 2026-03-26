@@ -6,12 +6,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Load password from environment variable
 db_password = os.getenv("DB_PASSWORD")
 
 engine = create_engine(f'mysql+mysqlconnector://root:{db_password}@localhost/blog_system', echo=True)
 
-#Creates a session factory and sessiom (EXPLANATION)
 Session = sessionmaker(bind=engine)
 session = Session()
 

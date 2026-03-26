@@ -1,4 +1,4 @@
-from datetime import datetime #Needed to get the current date and time
+from datetime import datetime 
 class Post:
     def __init__(self, post_id, title, content, author):
         self.post_id=post_id
@@ -18,8 +18,7 @@ class Post:
 
     def delete(self):
         self.is_published=False
-    #^Marks the post as unpublished rather than deleting, keeps it in memeory so it can be republished 
-    #or edited later
+   
     
 
 
