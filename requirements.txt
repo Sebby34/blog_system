@@ -1,2 +1,6 @@
-SQLAlchemy==1.4.48
+greenlet==3.3.2
 mysql-connector-python==8.1.0
+protobuf==4.21.12
+python-dotenv==1.2.1
+SQLAlchemy==1.4.48
+typing_extensions==4.15.0
