@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-db_password = os.getenv("DB_PASSWORD")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-engine = create_engine(f'mysql+mysqlconnector://root:{db_password}@localhost/blog_system', echo=True)
+engine = create_engine(DATABASE_URL, echo=True)
 
 Session = sessionmaker(bind=engine)
 session = Session()

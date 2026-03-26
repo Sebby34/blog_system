@@ -4,6 +4,7 @@ from sqlalchemy import select
 from storage.file_manager import User as DBUser, Post as DBPost, session
 import re
 
+
 def display_menu(user):
     role = user.role.lower()
     if role == "admin":
